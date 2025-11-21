@@ -1,29 +1,40 @@
 // src/contexts/AuthContext.js
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { createContext, useEffect, useState } from "react";
+import { signOut as firebaseSignOut, onAuthStateChanged } from "firebase/auth";
+import React, { createContext, useEffect, useState } from "react";
 import { auth } from "../api/firebase";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  user: null,
+  initializing: true,
+  setUser: () => {},
+  logout: async () => {}
+});
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
+    const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       if (initializing) setInitializing(false);
     });
-    return unsubscribe;
+    return () => unsub();
   }, []);
 
   const logout = async () => {
-    await signOut(auth);
+    try {
+      await firebaseSignOut(auth);
+      setUser(null);
+    } catch (e) {
+      console.warn("Logout error:", e);
+      throw e;
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, initializing, logout }}>
+    <AuthContext.Provider value={{ user, initializing, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
