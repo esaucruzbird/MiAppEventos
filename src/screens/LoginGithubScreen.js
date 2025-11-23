@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import React, { useContext, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   signOut as firebaseSignOut,
@@ -148,6 +149,7 @@ export default function LoginGithubScreen() {
   };
 
   return (
+    <SafeAreaView style={styles.safe} edges={['top','left','right']}>
     <View style={styles.container}>
       <Text style={styles.title}>Iniciar sesión</Text>
 
@@ -155,18 +157,20 @@ export default function LoginGithubScreen() {
       <TextInput placeholder="Contraseña" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
       <Button title="Iniciar con Email" onPress={handleEmailLogin} />
 
-      <View style={{ height: 20 }} />
+      <View style={{ height: 18 }} />
 
       <Button title="Iniciar con GitHub" onPress={handleGithubLogin} />
 
-      <View style={{ height: 20 }} />
+      <View style={{ height: 18 }} />
       <Button title="Registrarse" onPress={() => router.push("/register" )} />
     </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, justifyContent: "center" },
-  title: { fontSize: 22, marginBottom: 20 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 6 },
+  safe: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, paddingHorizontal: 16, paddingTop: 12, justifyContent: 'center' },
+  title: { fontSize: 22, marginBottom: 20, fontWeight: '700' },
+  input: { borderWidth: 1, padding: 10, marginBottom: 12, borderRadius: 8, borderColor: '#eee' },
 });

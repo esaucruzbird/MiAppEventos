@@ -2,6 +2,7 @@
 import { useRouter } from 'expo-router';
 import { useContext } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AuthContext } from '../contexts/AuthContext';
 
 export default function HomeScreen() {
@@ -12,25 +13,28 @@ export default function HomeScreen() {
     try {
       await logout();
     } catch (e) {
-      console.warn("Logout failed:", e);
+      console.warn('Logout failed:', e);
     }
-    router.replace("/login");
+    router.replace('/login');
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido {user?.email ?? user?.displayName ?? "usuario"}</Text>
+    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Bienvenido {user?.email ?? user?.displayName ?? 'usuario'}</Text>
 
-      <View style={{ height: 8 }} />
-      <Button title="Ver eventos" onPress={() => router.push('/events')} />
+        <View style={{ height: 12 }} />
+        <Button title="Ver eventos" onPress={() => router.push('/events')} />
 
-      <View style={{ height: 12 }} />
-      <Button title="Cerrar sesión" onPress={handleLogout} />
-    </View>
+        <View style={{ height: 12 }} />
+        <Button title="Cerrar sesión" color="#d9534f" onPress={handleLogout} />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container:{flex:1, padding:20, alignItems:'center', justifyContent:'center'},
-  title:{fontSize:18, marginBottom:12}
+  safe: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, paddingHorizontal: 16, paddingTop: 12, alignItems: 'center' },
+  title: { fontSize: 18, marginBottom: 12, fontWeight: '700' },
 });

@@ -1,7 +1,8 @@
 // src/screens/EventsListScreen.js
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '../api/firebase';
 import EventCard from '../components/EventCard';
 import { deleteEvent, isUserAdmin, subscribeEvents, toggleRSVP } from '../services/eventsService';
@@ -59,38 +60,43 @@ export default function EventsListScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <Text style={styles.header}>Eventos</Text>
-        {admin && (
-          <TouchableOpacity onPress={() => router.push('/events/new')} style={styles.createBtn}>
-            <Text>Crear</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+    <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
+      <View style={styles.container}>
+        <View style={styles.headerRow}>
+          <Text style={styles.header}>Eventos</Text>
+          {admin && (
+            <TouchableOpacity onPress={() => router.push('/events/new')} style={styles.createBtn}>
+              <Text style={styles.createBtnText}>Crear</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-      <FlatList
-        data={events}
-        keyExtractor={i => i.id}
-        renderItem={({ item }) => (
-          <EventCard
-            event={item}
-            onPress={handlePress}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onToggleRSVP={() => handleToggleRSVP(item)}
-            userIsGoing={(item.attendees || []).includes(user?.uid)}
-            isAdmin={admin}
-          />
-        )}
-      />
-    </View>
+        <FlatList
+          data={events}
+          keyExtractor={i => i.id}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          renderItem={({ item }) => (
+            <EventCard
+              event={item}
+              onPress={handlePress}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleRSVP={() => handleToggleRSVP(item)}
+              userIsGoing={(item.attendees || []).includes(user?.uid)}
+              isAdmin={admin}
+            />
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 12 },
-  header: { fontSize: 20, fontWeight: '700' },
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  createBtn: { padding: 8, backgroundColor: '#dff0d8', borderRadius: 6 }
+  safe: { flex: 1, backgroundColor: '#FAFAFB' },
+  container: { flex: 1, paddingHorizontal: 16, paddingTop: 8 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  header: { fontSize: 22, fontWeight: '700', color: '#222' },
+  createBtn: { paddingVertical: 6, paddingHorizontal: 12, backgroundColor: '#2b8aef', borderRadius: 8 },
+  createBtnText: { color: '#fff', fontWeight: '600' },
 });

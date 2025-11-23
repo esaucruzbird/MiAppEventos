@@ -3,6 +3,7 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { createEvent, getEventById, updateEvent } from '../services/eventsService';
 
 // helper formato dd/mm/yyyy hh:mm
@@ -31,7 +32,6 @@ export default function EventFormScreen({ id: propId }) {
         const e = await getEventById(id);
         if (!e) return;
         if (!mounted) return;
-        // e.date puede ser Timestamp de Firestore
         setName(e.name || '');
         setDateTime(e.date?.toDate ? e.date.toDate() : new Date(e.date));
         setLocation(e.location || '');
@@ -41,18 +41,14 @@ export default function EventFormScreen({ id: propId }) {
     return () => (mounted = false);
   }, [id]);
 
-  // Abrir picker (plataforma específica)
   async function handleOpenPicker() {
     if (Platform.OS === 'android') {
-      // En Android abrimos primero selector de fecha y luego de hora
       DateTimePickerAndroid.open({
         value: dateTime,
         onChange: (event, selectedDate) => {
-          // si el usuario dismiss, event.type === 'dismissed' (no hacemos nada)
           if (!selectedDate || event?.type === 'dismissed') {
             return;
           }
-          // selectedDate contiene la fecha; ahora abrimos time picker
           const chosenDate = selectedDate;
           DateTimePickerAndroid.open({
             value: chosenDate,
@@ -60,7 +56,6 @@ export default function EventFormScreen({ id: propId }) {
             is24Hour: true,
             onChange: (ev2, selectedTime) => {
               if (!selectedTime || ev2?.type === 'dismissed') {
-                // si canceló time, no actualizamos
                 return;
               }
               const final = new Date(chosenDate);
@@ -72,7 +67,6 @@ export default function EventFormScreen({ id: propId }) {
         mode: 'date',
       });
     } else {
-      // iOS: mostrar inline DateTimePicker en la UI
       setShowPicker(true);
     }
   }
@@ -97,39 +91,43 @@ export default function EventFormScreen({ id: propId }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Nombre</Text>
-      <TextInput value={name} onChangeText={setName} style={styles.input} />
+    <SafeAreaView style={styles.safe} edges={['top','left','right']}>
+      <View style={styles.container}>
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput value={name} onChangeText={setName} style={styles.input} />
 
-      <Text>Fecha y hora</Text>
-      <Button title={formatDateTimeForDisplay(dateTime)} onPress={handleOpenPicker} />
+        <Text style={styles.label}>Fecha y hora</Text>
+        <Button title={formatDateTimeForDisplay(dateTime)} onPress={handleOpenPicker} />
 
-      {showPicker && Platform.OS !== 'android' && (
-        <DateTimePicker
-          value={dateTime}
-          mode="datetime"
-          display="default"
-          onChange={(e, d) => {
-            // iOS envía selected date; cuando se cierre, ocultamos el picker
-            if (d) setDateTime(d);
-            // en iOS queremos mantenerlo oculto tras selección
-            setShowPicker(false);
-          }}
-        />
-      )}
+        {showPicker && Platform.OS !== 'android' && (
+          <DateTimePicker
+            value={dateTime}
+            mode="datetime"
+            display="default"
+            onChange={(e, d) => {
+              if (d) setDateTime(d);
+              setShowPicker(false);
+            }}
+          />
+        )}
 
-      <Text>Ubicación</Text>
-      <TextInput value={location} onChangeText={setLocation} style={styles.input} />
+        <Text style={styles.label}>Ubicación</Text>
+        <TextInput value={location} onChangeText={setLocation} style={styles.input} />
 
-      <Text>Descripción</Text>
-      <TextInput value={description} onChangeText={setDescription} style={[styles.input, { height: 100 }]} multiline />
+        <Text style={styles.label}>Descripción</Text>
+        <TextInput value={description} onChangeText={setDescription} style={[styles.input, { height: 100 }]} multiline />
 
-      <Button title={loading ? 'Guardando...' : 'Guardar'} onPress={handleSave} />
-    </View>
+        <View style={{ marginTop: 8 }}>
+          <Button title={loading ? 'Guardando...' : 'Guardar'} onPress={handleSave} />
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 12 },
-  input: { borderWidth: 1, borderColor: '#ddd', padding: 8, borderRadius: 6, marginBottom: 12 }
+  safe: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, paddingHorizontal: 16, paddingTop: 12 },
+  label: { marginBottom: 6, color: '#444', fontWeight: '600' },
+  input: { borderWidth: 1, borderColor: '#eee', padding: 10, borderRadius: 8, marginBottom: 12, backgroundColor: '#fff' },
 });
