@@ -6,12 +6,15 @@ import {
   collection,
   deleteDoc,
   doc,
+  documentId,
   getDoc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   updateDoc,
+  where
 } from 'firebase/firestore';
 import { db } from '../api/firebase'; // tu archivo existing: ../api/firebase
 
@@ -20,8 +23,8 @@ const usersCol = collection(db, 'users');
 
 export function subscribeEvents(onChange) {
   const q = query(eventsCol, orderBy('date', 'asc'));
-  return onSnapshot(q, snapshot => {
-    const events = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+  return onSnapshot(q, (snapshot) => {
+    const events = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
     onChange(events);
   });
 }
@@ -75,4 +78,48 @@ export async function isUserAdmin(uid) {
     console.warn('isUserAdmin error', e);
     return false;
   }
+}
+
+export async function getUsersByUids(uids = []) {
+  try {
+    if (!uids || uids.length === 0) return [];
+
+    const batches = [];
+    const results = [];
+
+    // Firestore 'in' acepta máximo 10 elementos, por eso batch de 10
+    for (let i = 0; i < uids.length; i += 10) {
+      const slice = uids.slice(i, i + 10);
+      const q = query(collection(db, 'users'), where(documentId(), 'in', slice));
+      batches.push(getDocs(q));
+    }
+
+    const snaps = await Promise.all(batches);
+    snaps.forEach(snap => {
+      snap.forEach(docSnap => {
+        results.push({ uid: docSnap.id, ...(docSnap.data() || {}) });
+      });
+    });
+
+    // Mantener el orden original de uids
+    const map = new Map(results.map(r => [r.uid, r]));
+    return uids.map(uid => map.get(uid) || { uid, name: null });
+  } catch (err) {
+    console.warn('getUsersByUids error', err);
+    // si falla la consulta, devolvemos los uids para no romper la UI
+    return uids.map(uid => ({ uid, name: null }));
+  }
+}
+
+// --- Añadir asistente (por UID) al evento
+export async function addAttendeeByUid(eventId, uid) {
+  const evRef = doc(db, 'events', eventId);
+  // añade uid (evita duplicados)
+  await updateDoc(evRef, { attendees: arrayUnion(uid) });
+}
+
+// --- Eliminar asistente (por UID)
+export async function removeAttendeeByUid(eventId, uid) {
+  const evRef = doc(db, 'events', eventId);
+  await updateDoc(evRef, { attendees: arrayRemove(uid) });
 }
