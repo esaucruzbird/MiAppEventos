@@ -137,7 +137,7 @@ export async function removeAttendeeByUid(eventId, uid) {
  * El documento se almacenará en: events/{eventId}/reviews/{uid}
  * Usamos setDoc(..., {merge:true}) para crear si no existe o actualizar si existe.
  */
-export async function submitReview(eventId, uid, comment, rating, name = null) {
+/*export async function submitReview(eventId, uid, comment, rating, name = null) {
   try {
     const ref = doc(db, 'events', eventId, 'reviews', uid);
     await setDoc(ref, {
@@ -147,6 +147,42 @@ export async function submitReview(eventId, uid, comment, rating, name = null) {
       rating: Number(rating),
       createdAt: serverTimestamp()
     }, { merge: true }); // merge = true para no sobrescribir campos adicionales
+    return true;
+  } catch (err) {
+    console.error('submitReview error', err);
+    throw err;
+  }
+}*/
+
+/**
+ * submitReview: guarda/actualiza la reseña para eventId/uid.
+ * Se asegura de guardar el campo `name` si se puede obtener.
+ */
+export async function submitReview(eventId, uid, comment, rating, name = null) {
+  try {
+    // Si no nos dieron el name, intentamos obtenerlo desde users/{uid}
+    let finalName = name || null;
+    if (!finalName) {
+      try {
+        const uRef = doc(db, 'users', uid);
+        const uSnap = await getDoc(uRef);
+        if (uSnap.exists()) {
+          finalName = uSnap.data().name || uSnap.data().displayName || null;
+        }
+      } catch (e) {
+        console.warn('submitReview: no se pudo obtener name de users/{uid}', e);
+      }
+    }
+
+    const ref = doc(db, 'events', eventId, 'reviews', uid);
+    await setDoc(ref, {
+      uid,
+      name: finalName,
+      comment,
+      rating: Number(rating),
+      createdAt: serverTimestamp()
+    }, { merge: true });
+
     return true;
   } catch (err) {
     console.error('submitReview error', err);
@@ -165,7 +201,7 @@ async function setDocFallback(eventId, uid, payload) {
  * Obtiene la reseña del usuario `uid` para el evento `eventId`.
  * Devuelve null si no existe.
  */
-export async function getUserReview(eventId, uid) {
+/*export async function getUserReview(eventId, uid) {
   try {
     const ref = doc(db, 'events', eventId, 'reviews', uid);
     const snap = await getDoc(ref);
@@ -175,17 +211,83 @@ export async function getUserReview(eventId, uid) {
     console.error('getUserReview error', err);
     throw err;
   }
+}*/
+
+/**
+ * getUserReview: obtiene la review del usuario para un evento y si le falta `name`
+ * intenta completarlo desde users/{uid}.
+ */
+export async function getUserReview(eventId, uid) {
+  try {
+    const ref = doc(db, 'events', eventId, 'reviews', uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    const data = { id: snap.id, ...snap.data() };
+
+    // si no tiene name, intentar completarlo desde users collection
+    if (!data.name) {
+      try {
+        const uRef = doc(db, 'users', uid);
+        const uSnap = await getDoc(uRef);
+        if (uSnap.exists()) {
+          data.name = uSnap.data().name || uSnap.data().displayName || null;
+        }
+      } catch (e) {
+        console.warn('getUserReview: no pudo obtener name desde users/', e);
+      }
+    }
+    return data;
+  } catch (err) {
+    console.error('getUserReview error', err);
+    throw err;
+  }
 }
 
 /**
  * Obtiene todas las reseñas del evento, ordenadas por createdAt (desc).
+ */
+/*export async function getReviews(eventId) {
+  try {
+    const col = collection(db, 'events', eventId, 'reviews');
+    const q = query(col, orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    console.error('getReviews error', err);
+    throw err;
+  }
+}*/
+
+/**
+ * getReviews: obtiene todas las reviews de un evento y completa el field `name`
+ * para aquellos docs que no lo tengan, en batch usando getUsersByUids (máx 10 por batch).
  */
 export async function getReviews(eventId) {
   try {
     const col = collection(db, 'events', eventId, 'reviews');
     const q = query(col, orderBy('createdAt', 'desc'));
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const reviews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    // detectar cuales reviews no tienen name
+    const missingUids = reviews.filter(r => !r.name).map(r => r.id);
+    if (missingUids.length === 0) {
+      return reviews;
+    }
+
+    // Importante: usa la función getUsersByUids (batch) para obtener nombres
+    // Si no la tienes, la incluyo abajo como helper. Aquí asumo que está disponible.
+    const users = await getUsersByUids(missingUids); // devuelve [{ uid, name, ...}, ...]
+    const userMap = new Map(users.map(u => [u.uid, u]));
+
+    // completar names en reviews
+    const enriched = reviews.map(r => {
+      if (r.name) return r;
+      const u = userMap.get(r.id);
+      return { ...r, name: u?.name || u?.displayName || null };
+    });
+
+    return enriched;
   } catch (err) {
     console.error('getReviews error', err);
     throw err;
