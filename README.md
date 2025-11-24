@@ -3,52 +3,68 @@
 =======
 # Bienvenido a mi aplicación para la gestión de eventos
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Esta aplicación fue desarrollada con Expo, con el comando: [`npx create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Además, implementa la herramienta de FireBase y FireStore, por lo que necesitará una cuenta activa en [`FireBase`](https://console.firebase.google.com/).
 
-## Get started
+## Para iniciar
 
-1. Install dependencies
+1. Instalar las dependencias básicas, en el PDF se detallan algunas más
 
    ```bash
    npm install
+   npm install firebase @react-navigation/native @react-navigation/native-stack react-native-gesture-handler react-native-screens
+   npm install expo-auth-session expo-notifications expo-constants expo-secure-store
+   npm install firebase @react-navigation/native @react-navigation/native-stack
+   npx expo@latest install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
+   npx expo install expo-auth-session expo-crypto expo-web-browser
+   npx expo install @react-native-async-storage/async-storage
+   npm install @react-navigation/native @react-navigation/native-stack
+   npx expo install react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated
+   npm install formik yup
+   npx expo register
+   npx expo login
+   npx expo install @react-native-community/datetimepicker
+   npx expo install expo-status-bar
+   npx expo install date-fns
    ```
-
-2. Start the app
+   
+2. Pasos para la instalación
+   Instalar Visual Studio Code, con la implementación de Git y React Native
+   Instalar Android Studio
+   En VSCode usar consola del tipo Git Bash y ejecutar:
+      git clone https://github.com/esaucruzbird/MiAppEventos.git
+   Crear branch de colaboración para poder agregar los cambios realizados en Github
+   Ya teniendo creada su rama, puede comenzar a revisar el código e implementarle mejoras, ejecutarlo con el comando de la siguiente sección, y después, abrir emulador
+   
+4. Para lanzar la aplicación limpiando la caché, para evitar situaciones raras
 
    ```bash
-   npx expo start
+   abrir emulador de Android Studio, se recomienda el modelo Google Pixel 7 por eficiencia, fluidez y launcher más limpio para no sobrecargar los recursos de la PC
+   npx expo start -c
    ```
 
-In the output, you'll find options to open the app in a
+Para ver los resultados, hay diferentes opciones para ejecutar la aplicación
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Emulador en Android Studio](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [Usar la aplicación de Expo Go](https://expo.dev/go), es posible escanera el QR para lanzar la App en Expo en un dispositivo físico
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Para conocer más sobre desarrollo de Expo
+Para obtener más información sobre cómo desarrollar su proyecto con Expo, consulte los siguientes recursos
 
-## Get a fresh project
+- [Documentación de Expo](https://docs.expo.dev/): Aprenda los conceptos básicos o profundice en temas avanzados con la información [guides](https://docs.expo.dev/guides)
+- [Tutoriales con Expo](https://docs.expo.dev/tutorial/introduction/): Para ver un tutorial paso a paso en el que se crea un proyecto que se ejecuta en Android, iOS y web
 
-When you're ready, run:
+## Licenciamiento
 
-```bash
-npm run reset-project
-```
+El proyecto utiliza la licencia Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0), la cual establece que:
+El interesado es libre de: compartir, copiar y redistribuir el material en cualquier medio o formato, de adaptar o remezclar, transformar y construir a partir del material. La licenciante no puede revocar estas libertades en tanto usted siga los términos establecidos con anterioridad.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Autor/es
+   Josué Esaú Cruz Mejía - Estudiante UDB Virtual - CM221973
 
-## Learn more
+## Documentación solicitada
+- [Reporte escrito](https://drive.google.com/file/d/1lg9F3yZJ6aprhilaO6QpxLtSrdkj4M13/view?usp=sharing)
+- [Tablero de Trello](https://chat.expo.dev)
+- [Mock Ups](https://chat.expo.de)
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
->>>>>>> 61bc1c8 (Initial commit)
+>>>>>>> Para futuras referencias, el commit inicial de este proyecto fue: 61bc1c8
