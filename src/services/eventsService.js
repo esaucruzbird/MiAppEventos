@@ -200,3 +200,51 @@ export function isEventPast(eventOrDate) {
   const now = new Date();
   return dateObj < now;
 }
+
+// --- Obtener eventos pasados (fecha < ahora)
+export async function getPastEvents() {
+  try {
+    // Firestore permite comparar con Date()
+    const now = new Date();
+    const col = collection(db, 'events');
+    const q = query(col, where('date', '<', now), orderBy('date', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    console.warn('getPastEvents error (fallback to client filter)', err);
+    // fallback: leer todos y filtrar en cliente si la query falla
+    const allSnap = await getDocs(collection(db, 'events'));
+    const all = allSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const now = new Date();
+    return all.filter(e => {
+      const evDate = e.date?.toDate ? e.date.toDate() : new Date(e.date);
+      return evDate < now;
+    }).sort((a,b) => new Date(b.date?.toDate ? b.date.toDate() : b.date) - new Date(a.date?.toDate ? a.date.toDate() : a.date));
+  }
+}
+
+// --- Calcular promedio de calificaciones (reviews subcollection)
+// devuelve { avg: number|null, count: number }
+export async function getAverageRating(eventId) {
+  try {
+    const col = collection(db, 'events', eventId, 'reviews');
+    const snap = await getDocs(col);
+    if (snap.empty) return { avg: null, count: 0 };
+    let sum = 0;
+    let count = 0;
+    snap.forEach(doc => {
+      const data = doc.data();
+      if (typeof data.rating === 'number') {
+        sum += data.rating;
+        count++;
+      } else if (data.rating) {
+        const n = Number(data.rating);
+        if (!isNaN(n)) { sum += n; count++; }
+      }
+    });
+    return { avg: count > 0 ? (sum / count) : null, count };
+  } catch (err) {
+    console.warn('getAverageRating error', err);
+    return { avg: null, count: 0 };
+  }
+}
