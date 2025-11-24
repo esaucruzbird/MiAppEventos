@@ -1,6 +1,6 @@
-<<<<<<< HEAD
+<<<<<<<
 # MiAppEventos
-=======
+>>>>>>>
 # Bienvenido a mi aplicación para la gestión de eventos
 
 Esta aplicación fue desarrollada con Expo, con el comando: [`npx create-expo-app`](https://www.npmjs.com/package/create-expo-app).
@@ -34,24 +34,24 @@ Además, implementa la herramienta de FireBase y FireStore, por lo que necesitar
    En VSCode usar consola del tipo Git Bash y ejecutar:
       git clone https://github.com/esaucruzbird/MiAppEventos.git
    Crear branch de colaboración para poder agregar los cambios realizados en Github
-   Ya teniendo creada su rama, puede comenzar a revisar el código e implementarle mejoras, ejecutarlo con el comando de la siguiente sección, y después, abrir emulador
+   Ya teniendo creada su rama, puede comenzar a revisar el código e implementarle mejoras, ejecutarlo con el comando de la siguiente sección
+   Abrir emulador de Android Studio, se recomienda el modelo Google Pixel 7 por eficiencia, fluidez y launcher más limpio para no sobrecargar los recursos de la PC
    
 4. Para lanzar la aplicación limpiando la caché, para evitar situaciones raras
 
    ```bash
-   abrir emulador de Android Studio, se recomienda el modelo Google Pixel 7 por eficiencia, fluidez y launcher más limpio para no sobrecargar los recursos de la PC
    npx expo start -c
    ```
 
 Para ver los resultados, hay diferentes opciones para ejecutar la aplicación
 
 - [Emulador en Android Studio](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [Usar la aplicación de Expo Go](https://expo.dev/go), es posible escanera el QR para lanzar la App en Expo en un dispositivo físico
+- [Usar la aplicación de Expo Go](https://expo.dev/go), es posible escanear el QR para lanzar la App en Expo en un dispositivo físico
 
 ## Para conocer más sobre desarrollo de Expo
 Para obtener más información sobre cómo desarrollar su proyecto con Expo, consulte los siguientes recursos
 
-- [Documentación de Expo](https://docs.expo.dev/): Aprenda los conceptos básicos o profundice en temas avanzados con la información [guides](https://docs.expo.dev/guides)
+- [Documentación de Expo](https://docs.expo.dev/): Aprenda los conceptos básicos o profundice en temas avanzados con la información [guías](https://docs.expo.dev/guides)
 - [Tutoriales con Expo](https://docs.expo.dev/tutorial/introduction/): Para ver un tutorial paso a paso en el que se crea un proyecto que se ejecuta en Android, iOS y web
 
 ## Licenciamiento
@@ -64,7 +64,7 @@ El interesado es libre de: compartir, copiar y redistribuir el material en cualq
 
 ## Documentación solicitada
 - [Reporte escrito](https://drive.google.com/file/d/1lg9F3yZJ6aprhilaO6QpxLtSrdkj4M13/view?usp=sharing)
-- [Tablero de Trello](https://chat.expo.dev)
-- [Mock Ups](https://chat.expo.de)
+- [Tablero de Trello](https://trello.com/invite/b/6923f33f42c21dc3dc9791b3/ATTI5f9b2664d54783248e352030a7b9b16eB1EE9EC9/dps-proyecto-2-cm221973)
+- [Mock Ups](https://drive.google.com/file/d/1bIO3pJtZCS-glM0VXdcPudJ6piNKyXT3/view?usp=sharing)
 
 >>>>>>> Para futuras referencias, el commit inicial de este proyecto fue: 61bc1c8
