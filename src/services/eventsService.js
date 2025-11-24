@@ -13,6 +13,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where
 } from 'firebase/firestore';
@@ -122,4 +123,80 @@ export async function addAttendeeByUid(eventId, uid) {
 export async function removeAttendeeByUid(eventId, uid) {
   const evRef = doc(db, 'events', eventId);
   await updateDoc(evRef, { attendees: arrayRemove(uid) });
+}
+
+// ----- REVIEWS (subcolección events/{eventId}/reviews/{uid}) -----
+
+/**
+ * Submit or update a review by a user for an event.
+ * The document id for the review is the uid => ensures one review per user per event.
+ */
+
+/**
+ * Guarda o actualiza la reseña de `uid` para el evento `eventId`.
+ * El documento se almacenará en: events/{eventId}/reviews/{uid}
+ * Usamos setDoc(..., {merge:true}) para crear si no existe o actualizar si existe.
+ */
+export async function submitReview(eventId, uid, comment, rating, name = null) {
+  try {
+    const ref = doc(db, 'events', eventId, 'reviews', uid);
+    await setDoc(ref, {
+      uid,
+      name: name || null,
+      comment,
+      rating: Number(rating),
+      createdAt: serverTimestamp()
+    }, { merge: true }); // merge = true para no sobrescribir campos adicionales
+    return true;
+  } catch (err) {
+    console.error('submitReview error', err);
+    throw err;
+  }
+}
+
+// helper fallback using set via addDoc-like: we use setDoc by importing it
+async function setDocFallback(eventId, uid, payload) {
+  const rRef = doc(db, 'events', eventId, 'reviews', uid);
+  await rRef && rRef; // placeholder
+  // we can't import setDoc here if not present; better do direct set with updateDoc fallback above.
+}
+
+/**
+ * Obtiene la reseña del usuario `uid` para el evento `eventId`.
+ * Devuelve null si no existe.
+ */
+export async function getUserReview(eventId, uid) {
+  try {
+    const ref = doc(db, 'events', eventId, 'reviews', uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    return { id: snap.id, ...snap.data() };
+  } catch (err) {
+    console.error('getUserReview error', err);
+    throw err;
+  }
+}
+
+/**
+ * Obtiene todas las reseñas del evento, ordenadas por createdAt (desc).
+ */
+export async function getReviews(eventId) {
+  try {
+    const col = collection(db, 'events', eventId, 'reviews');
+    const q = query(col, orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (err) {
+    console.error('getReviews error', err);
+    throw err;
+  }
+}
+
+// check if event date is in the past given event object or timestamp
+export function isEventPast(eventOrDate) {
+  if (!eventOrDate) return false;
+  const dateField = eventOrDate?.date ? eventOrDate.date : eventOrDate;
+  const dateObj = dateField?.toDate ? dateField.toDate() : new Date(dateField);
+  const now = new Date();
+  return dateObj < now;
 }
