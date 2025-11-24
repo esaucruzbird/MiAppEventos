@@ -1,4 +1,3 @@
-// src/services/eventsService.js
 import {
   addDoc,
   arrayRemove,
@@ -17,7 +16,7 @@ import {
   updateDoc,
   where
 } from 'firebase/firestore';
-import { db } from '../api/firebase'; // tu archivo existing: ../api/firebase
+import { db } from '../api/firebase';
 
 const eventsCol = collection(db, 'events');
 const usersCol = collection(db, 'users');
@@ -125,17 +124,12 @@ export async function removeAttendeeByUid(eventId, uid) {
   await updateDoc(evRef, { attendees: arrayRemove(uid) });
 }
 
-// ----- REVIEWS (subcolección events/{eventId}/reviews/{uid}) -----
+// ----- para las Reviews en firestore (subcolección events/{eventId}/reviews/{uid}) -----
 
 /**
- * Submit or update a review by a user for an event.
- * The document id for the review is the uid => ensures one review per user per event.
- */
-
-/**
- * Guarda o actualiza la reseña de `uid` para el evento `eventId`.
+ * Guardar o actualizar la reseña de `uid` para el evento `eventId`
  * El documento se almacenará en: events/{eventId}/reviews/{uid}
- * Usamos setDoc(..., {merge:true}) para crear si no existe o actualizar si existe.
+ * Usar setDoc(..., {merge:true}) para crear si no existe o actualizar si existe
  */
 /*export async function submitReview(eventId, uid, comment, rating, name = null) {
   try {
@@ -155,12 +149,12 @@ export async function removeAttendeeByUid(eventId, uid) {
 }*/
 
 /**
- * submitReview: guarda/actualiza la reseña para eventId/uid.
- * Se asegura de guardar el campo `name` si se puede obtener.
+ * submitReview: guarda/actualiza la reseña para eventId/uid
+ * Se asegura de guardar el campo `name` si se puede obtener
  */
 export async function submitReview(eventId, uid, comment, rating, name = null) {
   try {
-    // Si no nos dieron el name, intentamos obtenerlo desde users/{uid}
+    // Si no nos da el name, intentamos obtenerlo desde users/{uid}
     let finalName = name || null;
     if (!finalName) {
       try {
@@ -190,16 +184,14 @@ export async function submitReview(eventId, uid, comment, rating, name = null) {
   }
 }
 
-// helper fallback using set via addDoc-like: we use setDoc by importing it
 async function setDocFallback(eventId, uid, payload) {
   const rRef = doc(db, 'events', eventId, 'reviews', uid);
   await rRef && rRef; // placeholder
-  // we can't import setDoc here if not present; better do direct set with updateDoc fallback above.
 }
 
 /**
- * Obtiene la reseña del usuario `uid` para el evento `eventId`.
- * Devuelve null si no existe.
+ * Obtiene la reseña del usuario `uid` para el evento `eventId`
+ * Devuelve null si no existe
  */
 /*export async function getUserReview(eventId, uid) {
   try {
@@ -215,7 +207,7 @@ async function setDocFallback(eventId, uid, payload) {
 
 /**
  * getUserReview: obtiene la review del usuario para un evento y si le falta `name`
- * intenta completarlo desde users/{uid}.
+ * intenta completarlo desde users/{uid}
  */
 export async function getUserReview(eventId, uid) {
   try {
@@ -224,7 +216,7 @@ export async function getUserReview(eventId, uid) {
     if (!snap.exists()) return null;
     const data = { id: snap.id, ...snap.data() };
 
-    // si no tiene name, intentar completarlo desde users collection
+    // si no tiene name, intenta completarlo desde users collection
     if (!data.name) {
       try {
         const uRef = doc(db, 'users', uid);
@@ -244,7 +236,7 @@ export async function getUserReview(eventId, uid) {
 }
 
 /**
- * Obtiene todas las reseñas del evento, ordenadas por createdAt (desc).
+ * Obtiene todas las reseñas del evento, ordenadas por createdAt (desc)
  */
 /*export async function getReviews(eventId) {
   try {
@@ -260,7 +252,7 @@ export async function getUserReview(eventId, uid) {
 
 /**
  * getReviews: obtiene todas las reviews de un evento y completa el field `name`
- * para aquellos docs que no lo tengan, en batch usando getUsersByUids (máx 10 por batch).
+ * para aquellos docs que no lo tengan, en batch usando getUsersByUids (máx 10 por batch)
  */
 export async function getReviews(eventId) {
   try {
@@ -275,8 +267,7 @@ export async function getReviews(eventId) {
       return reviews;
     }
 
-    // Importante: usa la función getUsersByUids (batch) para obtener nombres
-    // Si no la tienes, la incluyo abajo como helper. Aquí asumo que está disponible.
+    // OJO: usar la función getUsersByUids (batch) para obtener nombres, se asume que viene bien
     const users = await getUsersByUids(missingUids); // devuelve [{ uid, name, ...}, ...]
     const userMap = new Map(users.map(u => [u.uid, u]));
 
@@ -294,7 +285,6 @@ export async function getReviews(eventId) {
   }
 }
 
-// check if event date is in the past given event object or timestamp
 export function isEventPast(eventOrDate) {
   if (!eventOrDate) return false;
   const dateField = eventOrDate?.date ? eventOrDate.date : eventOrDate;
@@ -303,7 +293,7 @@ export function isEventPast(eventOrDate) {
   return dateObj < now;
 }
 
-// --- Obtener eventos pasados (fecha < ahora)
+// Obtener eventos pasados (fecha < ahora)
 export async function getPastEvents() {
   try {
     // Firestore permite comparar con Date()

@@ -1,4 +1,3 @@
-// src/screens/HomeScreen.js
 import { useRouter } from 'expo-router';
 import { useContext } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';

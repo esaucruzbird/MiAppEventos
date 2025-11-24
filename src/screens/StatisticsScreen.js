@@ -1,4 +1,3 @@
-// src/screens/StatisticsScreen.js
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';

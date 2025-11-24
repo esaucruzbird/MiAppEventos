@@ -1,4 +1,3 @@
-// app/register.tsx
 import React from "react";
 import RegisterScreen from "../src/screens/RegisterScreen";
 

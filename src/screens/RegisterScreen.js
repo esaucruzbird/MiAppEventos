@@ -1,4 +1,3 @@
-// src/screens/RegisterScreen.js
 import { useRouter } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -26,12 +25,12 @@ export default function RegisterScreen() {
     console.log("REG: start register", { email: email.trim(), displayName });
 
     try {
-      // 1) Crear en Firebase Auth (createUserWithEmailAndPassword hace sign-in automáticamente)
+      // Crear en Firebase Auth (createUserWithEmailAndPassword hace sign-in automáticamente)
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
       const user = userCredential.user;
       console.log("REG: created user in Auth uid=", user.uid);
 
-      // 2) Crear perfil en Firestore (users/{uid})
+      // Crear perfil en Firestore (users/{uid})
       await setDoc(doc(db, "users", user.uid), {
         displayName: displayName || null,
         email: user.email,
@@ -40,14 +39,14 @@ export default function RegisterScreen() {
       });
       console.log("REG: created user document in Firestore uid=", user.uid);
 
-      // 3) Actualizar context para reflejar el usuario inmediatamente (opcional)
+      // Actualizar context para reflejar el usuario inmediatamente (opcional)
       if (typeof setUser === "function") {
         setUser(user);
       }
 
-      // 4) Navegar al home (o login). Usamos replace para que no se pueda volver atrás.
+      // Navegar al home (o login). Usamos replace para que no se pueda volver atrás.
       // Hacemos un pequeño timeout 150ms para dar tiempo a que el listener onAuthStateChanged
-      // (si existe) sincronice; no es obligatorio, pero evita carreras raras.
+      // (si existe) sincronice; no es obligatorio, pero evita interacciones raras
       setTimeout(() => {
         try {
           router.replace("/home");
@@ -57,7 +56,7 @@ export default function RegisterScreen() {
         }
       }, 150);
 
-      // IMPORTANTE: devolvemos aquí (opcional). El setLoading(false) queda en finally.
+      // OJO: devolvemos aquí (opcional). El setLoading(false) queda en finally.
       return;
     } catch (err) {
       console.error("Register error:", err);

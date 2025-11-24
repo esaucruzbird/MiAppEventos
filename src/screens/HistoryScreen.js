@@ -1,4 +1,3 @@
-// src/screens/HistoryScreen.js
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -38,7 +37,7 @@ export default function HistoryScreen() {
           keyExtractor={i => i.id}
           contentContainerStyle={{ paddingBottom: 24 }}
           renderItem={({ item }) => (
-            // reutiliza EventCard, pero pasamos isAdmin false (no editar desde historial)
+            // se reutiliza EventCard, pero pasamos isAdmin false (para no edicion desde historial)
             <TouchableOpacity onPress={() => handlePress(item)}>
               <EventCard
                 event={item}

@@ -1,4 +1,3 @@
-// src/screens/LoginScreen.js
 import { makeRedirectUri } from 'expo-auth-session';
 import * as Facebook from 'expo-auth-session/providers/facebook';
 import * as WebBrowser from 'expo-web-browser';

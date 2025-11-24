@@ -1,4 +1,3 @@
-// src/screens/LoginGithubScreen.js
 import { makeRedirectUri, startAsync } from "expo-auth-session";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -25,9 +24,9 @@ export default function LoginGithubScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // CONFIG (ajusta si cambia)
+  // Credenciales de GitHub
   const GITHUB_CLIENT_ID = "Ov23liIWeF4VD6Q4ZD6S";
-  const GITHUB_CLIENT_SECRET = "c4d3ba0295646ffc98a3b338f29c5cfac1c9fe53"; // solo DEV
+  const GITHUB_CLIENT_SECRET = "c4d3ba0295646ffc98a3b338f29c5cfac1c9fe53"; // solo en DEV
   const EXPO_PROXY_URL = "https://auth.expo.io/@esaucruz/MiApp";
 
   const handleEmailLogin = async () => {

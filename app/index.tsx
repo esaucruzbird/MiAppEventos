@@ -1,4 +1,3 @@
-// app/index.tsx
 import { useRouter } from "expo-router";
 import React, { useContext, useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -11,12 +10,12 @@ export default function Index() {
   useEffect(() => {
     if (initializing) return;
     if (user) {
-      // casteamos a any para evitar el chequeo estricto de rutas de TS en desarrollo
+      // castear a any para evitar el chequeo estricto de rutas de TS en desarrollo
       router.replace("/home" as any);
     } else {
       router.replace("/login" as any);
     }
-    // incluir router en deps para silenciar el lint rule
+    // se incluye router en deps para silenciar el lint rule
   }, [user, initializing, router]);
 
   return (

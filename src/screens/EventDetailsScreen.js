@@ -1,4 +1,3 @@
-// src/screens/EventDetailsScreen.js
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -170,7 +169,7 @@ export default function EventDetailsScreen({ id: propId }) {
           </View>
         )}
 
-        {/* REVIEWS SECTION */}
+        {/* seccion para comentarios */}
         <View style={{ marginTop: 18 }}>
           <Text style={styles.subtitle}>Reseñas</Text>
 

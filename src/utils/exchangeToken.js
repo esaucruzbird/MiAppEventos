@@ -1,6 +1,5 @@
-// src/utils/exchangeToken.js
-// IMPORTANTE: esto pone client_secret en el cliente. Solo para desarrollo.
-// En producción METER ESTE PASO EN EL SERVIDOR.
+// OJO: esto pone client_secret en el cliente. Solo para desarrollo.
+// En producción, este paso se debería colcoar en el servidor mas que todo por seguridad
 export async function exchangeCodeForToken({ code, clientId, clientSecret, redirectUri }) {
   const url = "https://github.com/login/oauth/access_token";
 

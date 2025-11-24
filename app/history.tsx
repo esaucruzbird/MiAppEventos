@@ -1,4 +1,3 @@
-// app/history.tsx
 import React from 'react';
 import HistoryScreen from '../src/screens/HistoryScreen';
 

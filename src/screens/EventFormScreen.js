@@ -1,4 +1,3 @@
-// src/screens/EventFormScreen.js
 import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -6,7 +5,7 @@ import { Alert, Button, Platform, StyleSheet, Text, TextInput, View } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { createEvent, getEventById, updateEvent } from '../services/eventsService';
 
-// helper formato dd/mm/yyyy hh:mm
+// helper para formato dd/mm/yyyy hh:mm
 function pad(n) { return String(n).padStart(2, '0'); }
 function formatDateTimeForDisplay(date) {
   if (!date) return '';

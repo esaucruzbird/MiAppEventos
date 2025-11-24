@@ -1,4 +1,3 @@
-// app/events/index.tsx
 import React from 'react';
 import EventsListScreen from '../../src/screens/EventsListScreen';
 

@@ -1,4 +1,3 @@
-// app/events/new.tsx
 import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import EventFormScreen from '../../src/screens/EventFormScreen';
